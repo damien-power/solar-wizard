@@ -1,9 +1,272 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Page</title>
-  </head>
-  <body>
-    <h1>Hello, World!</h1>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Wizard</title>
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-straight/css/uicons-solid-straight.css'> 
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .wizard-step { display: none; }
+        .active { display: block; }
+        .container { max-width: 600px; margin: auto; text-align: left; }
+        button { margin-top: 10px; padding: 12px; border: none; background-color: #4caf50; color: white; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        button:hover { background-color: #45a049; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .progress-bar { width: 100%; background-color: #f3f3f3; height: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .progress { height: 100%; width: 0%; background-color: #4caf50; border-radius: 10px; }
+        label { font-size: 16px; font-weight: bold; margin-bottom: 5px; display: block; }
+        input {
+            width: 100%;
+            padding: 12px 20px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input:focus {
+            border-color: #4caf50;
+            outline: none;
+            box-shadow: 0 0 5px rgba(76, 175, 80, 0.5);
+        }
+        .ownership-options, .existing-options, .roof-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Ensures 3 items per row */
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .ownership-option, .existing-option {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #f9f9f9;
+        }
+        .ownership-option.selected, .existing-option.selected, .roof-option.selected {
+            border-color: #4caf50;
+            background-color: #e8f5e9;
+        }
+        .ownership-option i, .existing-option i, .roof-option i {
+            font-size: 30px; /* Increase icon size */
+            display: block;
+            margin-bottom: 5px;
+        }
+        .roof-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            height: 120px;
+            overflow: hidden;
+            padding: 0;
+        }
+        .roof-image {
+            height: 80px;
+            width: 100%;
+            flex-grow: 1; Allows the image to take up all available space */
+            object-fit: cover;  Ensures the image covers the full area */
+        }        
+        .roof-option span {
+            padding: 15px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+        .recommendation-img { width: 100%; margin-top: 10px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Solar System Wizard</h2>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+        
+        <div class="wizard-step active" id="step1">
+            <label>What is your address?</label>
+            <input type="text" id="address" placeholder="Enter your address">
+            
+            <label style="margin-top: 20px;">Do you own your own home?</label>
+            <div class="ownership-options">
+                <div class="ownership-option" onclick="selectOption('ownership', 'homeowner')">
+                  <i class="fi fi-ss-house-user"></i>
+                  I'm the homeowner
+                </div>
+                <div class="ownership-option" onclick="selectOption('ownership', 'renter')">
+                  <i class="fi fi-ss-file-signature"></i>
+                  I'm the renter
+                </div>
+                <div class="ownership-option" onclick="selectOption('ownership', 'landlord')">
+                  <i class="fi fi-ss-house-key"></i>
+                  I'm the landlord
+                </div>
+            </div>
+            <input type="hidden" id="ownership" value="">
+            
+            <button id="nextButton1" onclick="nextStep(1)" disabled>Next</button>
+        </div>
+        
+        <div class="wizard-step" id="step2">
+            <label>Do you have an existing solar system?</label>
+            <div class="existing-options">
+                <div class="existing-option" onclick="selectOption('existing', 'Replace System')">
+                  <i class="fi fi-ss-replace"></i>
+                  Yes, I'd like to replace my existing system
+                </div>
+                <div class="existing-option" onclick="selectOption('existing', 'Alongside System')">
+                  <i class="fi fi-ss-apps-add"></i>
+                  Yes, I'd like to add solar alongside my existing system
+                </div>
+                <div class="existing-option" onclick="selectOption('existing', 'No Exisiting System')">
+                  <i class="fi fi-ss-cross-circle"></i>
+                  No, I don't have an exisiting solar system
+                </div>
+            </div>
+            <input type="hidden" id="existing" value="">
+
+            <label style="margin-top: 20px;">What Type of building do you live in?</label>
+            <div class="building-options">
+                <div class="building-option" onclick="selectOption('building', 'Detached')">
+                  <i class="fi fi-ss-replace"></i>
+                  Detached
+                </div>
+                <div class="building-option" onclick="selectOption('building', 'Semi-detached')">
+                  <i class="fi fi-ss-apps-add"></i>
+                  Semi-detached
+                </div>
+                <div class="building-option" onclick="selectOption('building', 'Appartment')">
+                  <i class="fi fi-ss-cross-circle"></i>
+                  Appartment
+                </div>
+            </div>
+            <input type="hidden" id="building" value="">
+          
+            <label style="margin-top: 20px;">What type of roof do you have?</label>
+            <div class="roof-options">
+                <div class="roof-option" onclick="selectOption('roof', 'Tin / Colourbond')">
+                  <img src="https://renew.org.au/wp-content/uploads/2018/09/a-roof-over-your-head8.jpg.webp" alt="Tin / Colourbond Roof" class="roof-image">
+                  <span>Tin / Colourbond</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Concrete Tile')">
+                  <img src="https://www.vivifyroofing.com.au/wp-content/uploads/2021/05/Concrete-Roof-Tiles.jpg" alt="Concrete Tile Roof" class="roof-image">
+                  <span>Concrete Tile<span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Terracotta Tile')">
+                  <img src="https://royceroofing.com.au/wp-content/uploads/terracotta-roof-tiles-curved.jpg" alt="Terracotta Tile Roof" class="roof-image">
+                  <span>Terracotta Tile</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Klip-Lok')">
+                  <img src="https://xclusiveroofing.com.au/wp-content/uploads/2018/12/snap-lock-roofing-2.jpg" alt="Klip-Lok Roof" class="roof-image">
+                  <span>Klip-Lok</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Slate')">
+                  <img src="https://www.firstclassslate.com.au/wp-content/uploads/2017/05/slate-roof-sydney.jpg" alt="Slate Roof" class="roof-image">
+                  <span>Slate</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Decramastic')">
+                  <img src="https://www.wrenroofcoatings.co.nz/edit/cache/images/decramastic_420x286c0pcenter.jpg" alt="Decramastic Roof" class="roof-image">
+                  <span>Decramastic</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Flat Concrete')">
+                  <img src="https://www.vivifyroofing.com.au/wp-content/uploads/2020/10/Flat-Metal-Roofing-Melbourne-Flat-Asphalt-Roof.png" alt="Flat Concrete" class="roof-image">
+                  <span>Flat Concrete</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Asbestos')">
+                  <img src="https://total-trades.co.uk/wp-content/uploads/2024/08/Sealing-an-Asbestos-Roof-How-Why-Explained.jpg" alt="Asbestos Roof" class="roof-image">
+                  <span>Asbestos</span>
+                </div>
+                <div class="roof-option" onclick="selectOption('roof', 'Other')">
+                  <i class="fi fi-ss-interrogation"></i>
+                  <span>Other / Not Sure</span>
+                </div>
+            </div>
+            <input type="hidden" id="roof" value="">
+
+            <button onclick="prevStep(2)">Back</button>
+            <button onclick="nextStep(2)">Next</button>
+        </div>
+        
+        <div class="wizard-step" id="step3">
+          <label>How much was your last electricity bill?</label>
+            <input type="number" id="bill" placeholder="Enter amount in $">
+
+          <label style="margin-top: 20px;">What phase electricity do you have?</label>
+            <select id="phase">
+                <option value="single">Single Phase</option>
+                <option value="three">Three Phase</option>
+            </select>
+            <button onclick="prevStep(3)">Back</button>
+            <button onclick="nextStep(3)">Next</button>
+        </div>
+        
+        <div class="wizard-step" id="step4">
+            <h3>Recommended Solar System</h3>
+            <p id="recommendation"></p>
+            <img src="https://pswenergy.com.au/wp-content/uploads/2024/04/SigenStor-Sigenergy-by-PSW-Energy-1.png" alt="Sigenergy Sigenstor Battery" class="recommendation-img">
+            <button onclick="prevStep(4)">Back</button>
+        </div>
+    </div>
+
+    <script>
+      let currentStep = 1;
+      const totalSteps = 4;
+
+      function initAutocomplete() {
+            const input = document.getElementById("address");
+            const autocomplete = new google.maps.places.Autocomplete(input, {
+                types: ['geocode'],
+                componentRestrictions: { country: 'AU' } // Restrict results to Australia
+            });
+            autocomplete.addListener('place_changed', function() {
+                validateStep1();
+            });
+        }
+
+        function selectOption(question, answer) {
+            document.getElementById(question).value = answer;
+            document.querySelectorAll("." + question + "-option").forEach(el => el.classList.remove("selected"));
+            event.currentTarget.classList.add("selected");
+            validateStep1();
+        }
+
+        function validateStep1() {
+            const address = document.getElementById("address").value;
+            const ownership = document.getElementById("ownership").value;
+            document.getElementById("nextButton1").disabled = !(address && ownership);
+        }
+
+        function updateProgressBar() {
+            const progress = (currentStep / totalSteps) * 100;
+            document.getElementById("progress").style.width = progress + "%";
+        }
+
+        function nextStep(step) {
+            document.getElementById(`step${step}`).classList.remove('active');
+            document.getElementById(`step${step + 1}`).classList.add('active');
+            currentStep++;
+            updateProgressBar();
+            
+            if (currentStep === 4) {
+                // generateRecommendation();
+            }
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step${step}`).classList.remove('active');
+            document.getElementById(`step${step - 1}`).classList.add('active');
+            currentStep--;
+            updateProgressBar();
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDxVqRP_8RYAQaklb2qP6w-ZRzt2KPswmc&libraries=places&callback=initAutocomplete" async defer></script>
+</body>
 </html>
+
